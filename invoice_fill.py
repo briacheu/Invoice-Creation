@@ -23,11 +23,10 @@ browser = webdriver.Chrome()
 
 
 
+##0-------LOGIN
 
 #load Mirakl
 browser.get("https://marketplace.bestbuy.ca/")
-
-
 
 #fill out login info (username > next, password > sign in)
 user = browser.find_element(By.ID, "username")
@@ -51,19 +50,13 @@ time.sleep(40)
 #NOW YOU DO 2FA
 
 ##1-------SETUP
-
 #setup dataframes. inv -- invoice details / tax -- province to tax document
-##OLD df_invoice = pd.read_csv("H:\eCommerce\Business Team\Operations\Operations\Projects\MP Preferred Shipping\inv.csv")
+
 df_invoice = pd.read_excel("H:\eCommerce\Business Team\Operations\Operations\Mirakl Invoice Automation\invoice_details.xlsx", sheet_name = "Invoice")
-df_invoice
 
 df_tax = pd.read_csv("C:\\Users\\briacheu_a\\Desktop\\Python\\Invoice Creation\\tax.csv")
 
 df_invoice['Processing Note'] = 'Not processed'
-
-
-
-
 
 
 ##2-------FUNCTION TO FILL OUT INVOICE
