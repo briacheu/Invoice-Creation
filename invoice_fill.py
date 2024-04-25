@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 import time
 import pandas as pd
+import toml
 
 from datetime import date
 
@@ -25,18 +26,26 @@ browser = webdriver.Chrome()
 
 ##0-------LOGIN
 
+#load from toml
+config = toml.load(r'C:\Users\briacheu_a\Desktop\Python\Invoice Creation\mirakl.toml')
+
+usern = config['mirakl']['user']
+passwo = config['mirakl']['password']
+
+
+
 #load Mirakl
 browser.get("https://marketplace.bestbuy.ca/")
 
 #fill out login info (username > next, password > sign in)
 user = browser.find_element(By.ID, "username")
-user.send_keys("briacheung@bestbuycanada.ca")
+user.send_keys(usern)
 next = browser.find_element(By.ID, "submitButton")
 next.click()
 
 time.sleep(1) #time to allow the page to load
 passw = browser.find_element(By.ID, "password")
-passw.send_keys("anim$T234234")
+passw.send_keys(passwo)
 
 next = browser.find_element(By.NAME, "action")
 next.click()
