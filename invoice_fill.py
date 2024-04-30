@@ -5,6 +5,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 import time
 import pandas as pd
 import toml
@@ -46,17 +48,21 @@ next.click()
 time.sleep(1) #time to allow the page to load
 passw = browser.find_element(By.ID, "password")
 passw.send_keys(passwo)
-
 next = browser.find_element(By.NAME, "action")
 next.click()
 
-time.sleep(40)
-#signin = browser.find_element(By.CLASS_NAME, "c3fc7dc62")
-#signin.click()
+#wait for front page to be loaded after MFA. 
+try:
+    element = WebDriverWait(browser, 30).until(                       #wait for 30 seconds
+        EC.presence_of_element_located((By.ID, "romaMenuContainer"))  #until you can find this element
+    )
+except:
+    print("Did not find page. Waiting for page to load.")
+    time.sleep(40)
+else:
+    print("Login complete.")
 
-#time period for password and 2FA
-time.sleep(40)
-#NOW YOU DO 2FA
+
 
 ##1-------SETUP
 #setup dataframes. inv -- invoice details / tax -- province to tax document
@@ -67,6 +73,8 @@ df_tax = pd.read_csv("C:\\Users\\briacheu_a\\Desktop\\Python\\Invoice Creation\\
 
 df_invoice['Processing Note'] = 'Not processed'
 
+print("Invoices loaded. Invoice creation beginning.")
+
 
 ##2-------FUNCTION TO FILL OUT INVOICE
 
@@ -75,7 +83,19 @@ def create_invoice(entry):
 
     #open up invoice creation page
     browser.get("https://marketplace.bestbuy.ca/sellerpayment/operator/accounting-document/manual/create")
-    time.sleep(3) #time to allow the page to load
+    #time.sleep(3) #time to allow the page to load
+
+    #wait for front page to be loaded after MFA. 
+    try:
+        element = WebDriverWait(browser, 5).until(  #wait for 3 seconds
+            EC.title_is(("Billing and documents"))  #until title is "Billing and Documents"
+        )
+    except:
+        print("Did not find page. Waiting for page to load.")
+        time.sleep(40)
+    else:
+        print("Invoicing page Loaded -- filling out invoice.")
+
 
     #invoice or credit
     if df_invoice.iloc[entry,8] == 'Credit': 
