@@ -69,6 +69,11 @@ else:
 
 df_invoice = pd.read_excel("H:\eCommerce\Business Team\Operations\Operations\Mirakl Invoice Automation\invoice_details.xlsx", sheet_name = "Invoice")
 
+#log df for troubleshooting
+today = str(date.today())
+df_invoice = pd.to_csv(f"H:\eCommerce\Business Team\Operations\Operations\Mirakl Invoice Automation\invoice_logs\invoice_log_{today}.csv")
+
+#load tax df
 df_tax = pd.read_csv("C:\\Users\\briacheu_a\\Desktop\\Python\\Invoice Creation\\tax.csv")
 
 df_invoice['Processing Note'] = 'Not processed'
@@ -94,7 +99,7 @@ def create_invoice(entry):
         print("Did not find page. Waiting for page to load.")
         time.sleep(40)
     else:
-        print("Invoicing page Loaded -- filling out invoice.")
+        print("Invoicing page loaded -- filling out invoice.")
 
 
     #invoice or credit
