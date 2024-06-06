@@ -71,7 +71,7 @@ df_invoice = pd.read_excel("H:\eCommerce\Business Team\Operations\Operations\Mir
 
 #log df for troubleshooting
 today = str(date.today())
-df_invoice = pd.to_csv(f"H:\eCommerce\Business Team\Operations\Operations\Mirakl Invoice Automation\invoice_logs\invoice_log_{today}.csv")
+df_invoice.to_csv(f"H:\eCommerce\Business Team\Operations\Operations\Mirakl Invoice Automation\invoice_logs\invoice_log_{today}.csv")
 
 #load tax df
 df_tax = pd.read_csv("C:\\Users\\briacheu_a\\Desktop\\Python\\Invoice Creation\\tax.csv")
@@ -186,21 +186,29 @@ def create_invoice(entry):
         time.sleep(1)
         #browser.find_element(By.XPATH, value="/html/body/div[1]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/button[1]").click() 
         browser.find_element(By.XPATH, value="/html/body/div[1]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div/div[2]/div/div/button[2]").click() 
+        time.sleep(1)
         
         browser.find_element(By.XPATH, value="//button[@class='btn btn-solid btn-solid-danger']").click()
+        time.sleep(1)
+
+        #wait for page to load before trying to get invoice number
+        element = WebDriverWait(browser, 2).until(                       #wait for 30 seconds
+            EC.presence_of_element_located((By.ID, "roma-datatable-accounting-document-to-seller-table-toolbar-action"))  #until you can find this element
+        )
+
 
         #grab invoice number (pulls the most recent invoice number)
         browser.get("https://marketplace.bestbuy.ca/sellerpayment/operator/accounting-document/list/to-sellers?limit=25")
         time.sleep(2)
         confirmation = "done"
         try: 
-            confirmation = browser.find_element(By.XPATH, value='/html/body/div[1]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div[2]/div[2]/div/table/tbody/tr[1]/td[1]/div/div/a').text
+            confirmation = browser.find_element(By.XPATH, value='/html/body/div[1]/div/div[2]/div/div[2]/div/div/div[2]/div[1]/main/div/div/div/section/div[2]/div/div/div[2]/div[2]/table/tbody/tr[1]/td[2]/div/div/div/a/span').text
         except:
             confirmation = "invoice number can't be pulled"
         df_invoice.at[entry, 'Processing Note'] = confirmation
 
 
-    #confirm
+    #confirm & add to invoice_count
 
     
     print(confirmation)
@@ -215,9 +223,10 @@ time.sleep(20)
 #save invoice file 
 today = str(date.today())
 filepath = "H:\\eCommerce\\Business Team\\Operations\\Operations\\Mirakl Invoice Automation\\invoice_details_" + today + ".csv"
-df_invoice.to_csv(filepath)
+df_invoice.to_csv(filepath, mode='a')
 
-print("Submission complete")
+#print(f"Submission complete, {invoice_count} invoices created.")
+print("Submission complete.")
 
 #rewrite import file
 import shutil
